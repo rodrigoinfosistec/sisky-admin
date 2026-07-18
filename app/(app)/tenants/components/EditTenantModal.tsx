@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import api from "@/lib/api";
 
@@ -11,18 +11,23 @@ interface Tenant {
 }
 
 interface Props {
-    tenant: Tenant;
+    tenant: Tenant | null;
     onClose: () => void;
     onSuccess: () => void;
 }
 
 export default function EditTenantModal({ tenant, onClose, onSuccess }: Props) {
-    const [name, setName] = useState(tenant.name);
+    const [name, setName] = useState("");
     const [errors, setErrors] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
 
+    useEffect(() => {
+        if (tenant) setName(tenant.name);
+    }, [tenant]);
+
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
+        if (!tenant) return;
         setErrors([]);
         setLoading(true);
 
@@ -41,6 +46,8 @@ export default function EditTenantModal({ tenant, onClose, onSuccess }: Props) {
             setLoading(false);
         }
     }
+
+    if (!tenant) return null;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">

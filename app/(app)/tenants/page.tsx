@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Eye, Plus, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/api";
 import ConfirmDialog from "@/components/confirm-dialog";
@@ -183,14 +183,21 @@ export default function TenantsPage() {
                                     <td className="px-6 py-4 text-muted-foreground">{tenant.companyCount}</td>
                                     <td className="px-6 py-4">
                                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${tenant.active
-                                                ? "bg-green-100 text-green-700"
-                                                : "bg-muted text-muted-foreground"
+                                            ? "bg-green-100 text-green-700"
+                                            : "bg-muted text-muted-foreground"
                                             }`}>
                                             {tenant.active ? "Ativo" : "Inativo"}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex gap-3">
+                                            <a
+                                                href={`/tenants/${tenant.id}`}
+                                                className="flex items-center gap-1 text-muted-foreground hover:text-foreground text-xs font-medium"
+                                            >
+                                                <Eye size={13} />
+                                                Detalhes
+                                            </a>
                                             <button
                                                 onClick={() => setEditingTenant(tenant)}
                                                 className="flex items-center gap-1 text-blue-500 hover:text-blue-700 text-xs font-medium"
@@ -201,8 +208,8 @@ export default function TenantsPage() {
                                             <button
                                                 onClick={() => setTogglingTenant(tenant)}
                                                 className={`text-xs font-medium ${tenant.active
-                                                        ? "text-orange-500 hover:text-orange-700"
-                                                        : "text-green-500 hover:text-green-700"
+                                                    ? "text-orange-500 hover:text-orange-700"
+                                                    : "text-green-500 hover:text-green-700"
                                                     }`}
                                             >
                                                 {tenant.active ? "Desativar" : "Ativar"}
@@ -246,20 +253,20 @@ export default function TenantsPage() {
                 </div>
             </div>
 
-            {showCreateModal && (
-                <CreateTenantModal
-                    onClose={() => setShowCreateModal(false)}
-                    onSuccess={() => fetchTenants(1)}
-                />
-            )}
+            {
+                showCreateModal && (
+                    <CreateTenantModal
+                        onClose={() => setShowCreateModal(false)}
+                        onSuccess={() => fetchTenants(1)}
+                    />
+                )
+            }
 
-            {editingTenant && (
-                <EditTenantModal
-                    tenant={editingTenant}
-                    onClose={() => setEditingTenant(null)}
-                    onSuccess={() => fetchTenants(pagination.page)}
-                />
-            )}
+            <EditTenantModal
+                tenant={editingTenant}
+                onClose={() => setEditingTenant(null)}
+                onSuccess={() => fetchTenants(pagination.page)}
+            />
 
             <ConfirmDialog
                 open={!!deletingTenant}
@@ -280,6 +287,6 @@ export default function TenantsPage() {
                 onConfirm={handleToggleActive}
                 onCancel={() => setTogglingTenant(null)}
             />
-        </div>
+        </div >
     );
 }
