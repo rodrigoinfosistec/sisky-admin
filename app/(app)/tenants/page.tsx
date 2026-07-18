@@ -126,7 +126,7 @@ export default function TenantsPage() {
                                     <td className="px-6 py-4 text-muted-foreground">{tenant.companyCount}</td>
                                     <td className="px-6 py-4">
                                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${tenant.active
-                                                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                                ? "bg-green-100 text-green-700"
                                                 : "bg-muted text-muted-foreground"
                                             }`}>
                                             {tenant.active ? "Ativo" : "Inativo"}
@@ -136,8 +136,8 @@ export default function TenantsPage() {
                                         <button
                                             onClick={() => handleToggleActive(tenant.id)}
                                             className={`text-xs px-3 py-1 rounded font-medium transition-colors ${tenant.active
-                                                    ? "bg-destructive/10 text-destructive hover:bg-destructive/20"
-                                                    : "bg-primary/10 text-primary hover:bg-primary/20"
+                                                ? "bg-destructive/10 text-destructive hover:bg-destructive/20"
+                                                : "bg-primary/10 text-primary hover:bg-primary/20"
                                                 }`}
                                         >
                                             {tenant.active ? "Desativar" : "Ativar"}
