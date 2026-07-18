@@ -1,8 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Building2 } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import api from "@/lib/api";
+import ConfirmDialog from "@/components/confirm-dialog";
+import CreateTenantModal from "./components/CreateTenantModal";
+import EditTenantModal from "./components/EditTenantModal";
 
 interface Tenant {
     id: number;
@@ -33,6 +37,12 @@ export default function TenantsPage() {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [searchInput, setSearchInput] = useState("");
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [editingTenant, setEditingTenant] = useState<Tenant | null>(null);
+    const [deletingTenant, setDeletingTenant] = useState<Tenant | null>(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+    const [togglingTenant, setTogglingTenant] = useState<Tenant | null>(null);
+    const [toggleLoading, setToggleLoading] = useState(false);
 
     async function fetchTenants(page: number) {
         setLoading(true);
@@ -52,9 +62,38 @@ export default function TenantsPage() {
         }
     }
 
-    async function handleToggleActive(id: number) {
-        await api.patch(`/api/admin/tenants/${id}/toggle-active`);
-        fetchTenants(pagination.page);
+    async function handleDelete() {
+        if (!deletingTenant) return;
+        setDeleteLoading(true);
+        try {
+            await api.delete(`/api/admin/tenants/${deletingTenant.id}`);
+            toast.success("Tenant excluído com sucesso!");
+            setDeletingTenant(null);
+            fetchTenants(pagination.page);
+        } catch (err: any) {
+            if (err.response?.data) {
+                toast.error(err.response.data);
+            } else {
+                toast.error("Erro ao excluir tenant.");
+            }
+        } finally {
+            setDeleteLoading(false);
+        }
+    }
+
+    async function handleToggleActive() {
+        if (!togglingTenant) return;
+        setToggleLoading(true);
+        try {
+            await api.patch(`/api/admin/tenants/${togglingTenant.id}/toggle-active`);
+            toast.success(`Tenant ${togglingTenant.active ? "desativado" : "ativado"} com sucesso!`);
+            setTogglingTenant(null);
+            fetchTenants(pagination.page);
+        } catch {
+            toast.error("Erro ao atualizar tenant.");
+        } finally {
+            setToggleLoading(false);
+        }
     }
 
     function handleSearch(e: React.FormEvent) {
@@ -68,9 +107,18 @@ export default function TenantsPage() {
 
     return (
         <div>
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold text-foreground">Tenants</h1>
-                <p className="text-muted-foreground text-sm mt-1">Gestão de todos os tenants</p>
+            <div className="flex items-center justify-between mb-6">
+                <div>
+                    <h1 className="text-2xl font-bold text-foreground">Tenants</h1>
+                    <p className="text-muted-foreground text-sm mt-1">Gestão de todos os tenants</p>
+                </div>
+                <button
+                    onClick={() => setShowCreateModal(true)}
+                    className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+                >
+                    <Plus size={15} />
+                    Novo Tenant
+                </button>
             </div>
 
             <div className="bg-card rounded-xl shadow-sm overflow-hidden border border-border">
@@ -86,6 +134,15 @@ export default function TenantsPage() {
                         <button type="submit" className="px-4 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:bg-primary/90">
                             Buscar
                         </button>
+                        {search && (
+                            <button
+                                type="button"
+                                onClick={() => { setSearchInput(""); setSearch(""); }}
+                                className="px-4 py-2 text-sm border border-border text-foreground rounded-lg hover:bg-muted"
+                            >
+                                Limpar
+                            </button>
+                        )}
                     </form>
                 </div>
 
@@ -118,7 +175,7 @@ export default function TenantsPage() {
                             </tr>
                         ) : (
                             tenants.map((tenant) => (
-                                <tr key={tenant.id} className="hover:bg-muted/50">
+                                <tr key={tenant.id} className={`hover:bg-muted/50 ${!tenant.active ? "opacity-60" : ""}`}>
                                     <td className="px-6 py-4 text-muted-foreground">{tenant.id}</td>
                                     <td className="px-6 py-4 font-medium text-foreground">{tenant.name}</td>
                                     <td className="px-6 py-4 text-muted-foreground">{tenant.subdomain}</td>
@@ -133,15 +190,31 @@ export default function TenantsPage() {
                                         </span>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <button
-                                            onClick={() => handleToggleActive(tenant.id)}
-                                            className={`text-xs px-3 py-1 rounded font-medium transition-colors ${tenant.active
-                                                ? "bg-destructive/10 text-destructive hover:bg-destructive/20"
-                                                : "bg-primary/10 text-primary hover:bg-primary/20"
-                                                }`}
-                                        >
-                                            {tenant.active ? "Desativar" : "Ativar"}
-                                        </button>
+                                        <div className="flex gap-3">
+                                            <button
+                                                onClick={() => setEditingTenant(tenant)}
+                                                className="flex items-center gap-1 text-blue-500 hover:text-blue-700 text-xs font-medium"
+                                            >
+                                                <Pencil size={13} />
+                                                Editar
+                                            </button>
+                                            <button
+                                                onClick={() => setTogglingTenant(tenant)}
+                                                className={`text-xs font-medium ${tenant.active
+                                                        ? "text-orange-500 hover:text-orange-700"
+                                                        : "text-green-500 hover:text-green-700"
+                                                    }`}
+                                            >
+                                                {tenant.active ? "Desativar" : "Ativar"}
+                                            </button>
+                                            <button
+                                                onClick={() => setDeletingTenant(tenant)}
+                                                className="flex items-center gap-1 text-destructive hover:text-destructive/80 text-xs font-medium"
+                                            >
+                                                <Trash2 size={13} />
+                                                Excluir
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))
@@ -172,6 +245,41 @@ export default function TenantsPage() {
                     </div>
                 </div>
             </div>
+
+            {showCreateModal && (
+                <CreateTenantModal
+                    onClose={() => setShowCreateModal(false)}
+                    onSuccess={() => fetchTenants(1)}
+                />
+            )}
+
+            {editingTenant && (
+                <EditTenantModal
+                    tenant={editingTenant}
+                    onClose={() => setEditingTenant(null)}
+                    onSuccess={() => fetchTenants(pagination.page)}
+                />
+            )}
+
+            <ConfirmDialog
+                open={!!deletingTenant}
+                title="Excluir tenant"
+                description={`Tem certeza que deseja excluir o tenant "${deletingTenant?.name}"? Esta ação não pode ser desfeita.`}
+                confirmLabel="Excluir"
+                loading={deleteLoading}
+                onConfirm={handleDelete}
+                onCancel={() => setDeletingTenant(null)}
+            />
+
+            <ConfirmDialog
+                open={!!togglingTenant}
+                title={togglingTenant?.active ? "Desativar tenant" : "Ativar tenant"}
+                description={`Tem certeza que deseja ${togglingTenant?.active ? "desativar" : "ativar"} o tenant "${togglingTenant?.name}"?`}
+                confirmLabel={togglingTenant?.active ? "Desativar" : "Ativar"}
+                loading={toggleLoading}
+                onConfirm={handleToggleActive}
+                onCancel={() => setTogglingTenant(null)}
+            />
         </div>
     );
 }
