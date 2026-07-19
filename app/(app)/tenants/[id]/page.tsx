@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { ArrowLeft, Building2, Package, Users } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/api";
+import PageTitle from "@/components/page-title";
 
 interface TenantDetailsCompany {
     id: number;
@@ -62,6 +63,8 @@ export default function TenantDetailsPage() {
 
     return (
         <div>
+            <PageTitle title={tenant.name} />
+
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-2xl font-bold text-foreground">{tenant.name}</h1>
@@ -118,8 +121,8 @@ export default function TenantDetailsPage() {
                                 >
                                     <span className="text-sm text-foreground">{company.name}</span>
                                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${company.active
-                                            ? "bg-green-100 text-green-700"
-                                            : "bg-muted text-muted-foreground"
+                                        ? "bg-green-100 text-green-700"
+                                        : "bg-muted text-muted-foreground"
                                         }`}>
                                         {company.active ? "Ativa" : "Inativa"}
                                     </span>
@@ -145,8 +148,8 @@ export default function TenantDetailsPage() {
                                         <p className="text-xs text-muted-foreground">{module.slug}</p>
                                     </div>
                                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${module.active
-                                            ? "bg-green-100 text-green-700"
-                                            : "bg-muted text-muted-foreground"
+                                        ? "bg-green-100 text-green-700"
+                                        : "bg-muted text-muted-foreground"
                                         }`}>
                                         {module.active ? "Ativo" : "Inativo"}
                                     </span>

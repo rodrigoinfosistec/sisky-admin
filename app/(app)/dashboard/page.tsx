@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { LayoutDashboard, Building2, Users, TrendingUp } from "lucide-react";
 import api from "@/lib/api";
+import PageTitle from "@/components/page-title";
 
 interface Metrics {
     totalTenants: number;
@@ -46,6 +47,8 @@ export default function DashboardPage() {
 
     return (
         <div>
+            <PageTitle title="Dashboard" />
+
             <div className="mb-6">
                 <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
                 <p className="text-muted-foreground text-sm mt-1">Visão global do Sisky</p>

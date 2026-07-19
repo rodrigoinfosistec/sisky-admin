@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
+import PageTitle from "@/components/page-title";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -39,6 +40,8 @@ export default function LoginPage() {
 
     return (
         <div className="w-full max-w-md bg-card rounded-xl shadow-md p-8 border border-border">
+            <PageTitle title="Login" />
+
             <h2 className="text-2xl font-bold text-foreground mb-1">Sisky Admin</h2>
             <p className="text-muted-foreground mb-6 text-sm">Painel de administração global</p>
 

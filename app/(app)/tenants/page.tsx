@@ -7,6 +7,7 @@ import api from "@/lib/api";
 import ConfirmDialog from "@/components/confirm-dialog";
 import CreateTenantModal from "./components/CreateTenantModal";
 import EditTenantModal from "./components/EditTenantModal";
+import PageTitle from "@/components/page-title";
 
 interface Tenant {
     id: number;
@@ -107,6 +108,8 @@ export default function TenantsPage() {
 
     return (
         <div>
+            <PageTitle title="Tenants" />
+
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-2xl font-bold text-foreground">Tenants</h1>
