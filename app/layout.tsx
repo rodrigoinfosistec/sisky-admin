@@ -17,6 +17,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Sisky Admin",
   description: "Painel de administração global do Sisky",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({

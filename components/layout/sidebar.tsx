@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Building2, LogOut } from "lucide-react";
+import Image from "next/image";
 
 interface Props {
     onLogout: () => void;
@@ -19,8 +20,8 @@ export default function Sidebar({ onLogout, onNavigate }: Props) {
     return (
         <div className="flex flex-col h-full bg-card border-r border-border">
             <div className="p-6 border-b border-border">
-                <h1 className="text-lg font-bold text-foreground">Sisky Admin</h1>
-                <p className="text-xs text-muted-foreground mt-0.5">Painel global</p>
+                <Image src="/logo.svg" alt="Sisky Admin" width={120} height={32} />
+                <p className="text-xs text-muted-foreground mt-2">Painel global</p>
             </div>
 
             <nav className="flex-1 p-4 flex flex-col gap-1">
