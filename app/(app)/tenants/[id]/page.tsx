@@ -121,8 +121,8 @@ export default function TenantDetailsPage() {
                                 >
                                     <span className="text-sm text-foreground">{company.name}</span>
                                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${company.active
-                                        ? "bg-green-100 text-green-700"
-                                        : "bg-muted text-muted-foreground"
+                                            ? "bg-green-100 text-green-700"
+                                            : "bg-muted text-muted-foreground"
                                         }`}>
                                         {company.active ? "Ativa" : "Inativa"}
                                     </span>
@@ -148,8 +148,8 @@ export default function TenantDetailsPage() {
                                         <p className="text-xs text-muted-foreground">{module.slug}</p>
                                     </div>
                                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${module.active
-                                        ? "bg-green-100 text-green-700"
-                                        : "bg-muted text-muted-foreground"
+                                            ? "bg-green-100 text-green-700"
+                                            : "bg-muted text-muted-foreground"
                                         }`}>
                                         {module.active ? "Ativo" : "Inativo"}
                                     </span>

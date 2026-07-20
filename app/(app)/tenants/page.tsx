@@ -8,6 +8,7 @@ import ConfirmDialog from "@/components/confirm-dialog";
 import CreateTenantModal from "./components/CreateTenantModal";
 import EditTenantModal from "./components/EditTenantModal";
 import PageTitle from "@/components/page-title";
+import { SkeletonTable } from "@/components/skeleton";
 
 interface Tenant {
     id: number;
@@ -149,88 +150,86 @@ export default function TenantsPage() {
                     </form>
                 </div>
 
-                <table className="w-full text-sm">
-                    <thead className="bg-muted border-b border-border">
-                        <tr>
-                            <th className="text-left px-6 py-3 text-muted-foreground font-medium">#</th>
-                            <th className="text-left px-6 py-3 text-muted-foreground font-medium">Nome</th>
-                            <th className="text-left px-6 py-3 text-muted-foreground font-medium">Subdomínio</th>
-                            <th className="text-left px-6 py-3 text-muted-foreground font-medium">Usuários</th>
-                            <th className="text-left px-6 py-3 text-muted-foreground font-medium">Empresas</th>
-                            <th className="text-left px-6 py-3 text-muted-foreground font-medium">Status</th>
-                            <th className="text-left px-6 py-3 text-muted-foreground font-medium">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border">
-                        {loading ? (
-                            Array.from({ length: 5 }).map((_, i) => (
-                                <tr key={i}>
-                                    <td colSpan={7} className="px-6 py-4">
-                                        <div className="h-4 bg-muted rounded animate-pulse" />
-                                    </td>
+                <div className="hidden lg:block">
+                    {loading ? (
+                        <SkeletonTable rows={5} cols={7} />
+                    ) : (
+                        <table className="w-full text-sm">
+                            <thead className="bg-muted border-b border-border">
+                                <tr>
+                                    <th className="text-left px-6 py-3 text-muted-foreground font-medium">#</th>
+                                    <th className="text-left px-6 py-3 text-muted-foreground font-medium">Nome</th>
+                                    <th className="text-left px-6 py-3 text-muted-foreground font-medium">Subdomínio</th>
+                                    <th className="text-left px-6 py-3 text-muted-foreground font-medium">Usuários</th>
+                                    <th className="text-left px-6 py-3 text-muted-foreground font-medium">Empresas</th>
+                                    <th className="text-left px-6 py-3 text-muted-foreground font-medium">Status</th>
+                                    <th className="text-left px-6 py-3 text-muted-foreground font-medium">Ações</th>
                                 </tr>
-                            ))
-                        ) : tenants.length === 0 ? (
-                            <tr>
-                                <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">
-                                    Nenhum tenant encontrado.
-                                </td>
-                            </tr>
-                        ) : (
-                            tenants.map((tenant) => (
-                                <tr key={tenant.id} className={`hover:bg-muted/50 ${!tenant.active ? "opacity-60" : ""}`}>
-                                    <td className="px-6 py-4 text-muted-foreground">{tenant.id}</td>
-                                    <td className="px-6 py-4 font-medium text-foreground">{tenant.name}</td>
-                                    <td className="px-6 py-4 text-muted-foreground">{tenant.subdomain}</td>
-                                    <td className="px-6 py-4 text-muted-foreground">{tenant.userCount}</td>
-                                    <td className="px-6 py-4 text-muted-foreground">{tenant.companyCount}</td>
-                                    <td className="px-6 py-4">
-                                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${tenant.active
-                                            ? "bg-green-100 text-green-700"
-                                            : "bg-muted text-muted-foreground"
-                                            }`}>
-                                            {tenant.active ? "Ativo" : "Inativo"}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex gap-3">
-                                            <a
-                                                href={`/tenants/${tenant.id}`}
-                                                className="flex items-center gap-1 text-muted-foreground hover:text-foreground text-xs font-medium"
-                                            >
-                                                <Eye size={13} />
-                                                Detalhes
-                                            </a>
-                                            <button
-                                                onClick={() => setEditingTenant(tenant)}
-                                                className="flex items-center gap-1 text-blue-500 hover:text-blue-700 text-xs font-medium"
-                                            >
-                                                <Pencil size={13} />
-                                                Editar
-                                            </button>
-                                            <button
-                                                onClick={() => setTogglingTenant(tenant)}
-                                                className={`text-xs font-medium ${tenant.active
-                                                    ? "text-orange-500 hover:text-orange-700"
-                                                    : "text-green-500 hover:text-green-700"
-                                                    }`}
-                                            >
-                                                {tenant.active ? "Desativar" : "Ativar"}
-                                            </button>
-                                            <button
-                                                onClick={() => setDeletingTenant(tenant)}
-                                                className="flex items-center gap-1 text-destructive hover:text-destructive/80 text-xs font-medium"
-                                            >
-                                                <Trash2 size={13} />
-                                                Excluir
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                            </thead>
+                            <tbody className="divide-y divide-border">
+                                {tenants.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">
+                                            Nenhum tenant encontrado.
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    tenants.map((tenant) => (
+                                        <tr key={tenant.id} className={`hover:bg-muted/50 ${!tenant.active ? "opacity-60" : ""}`}>
+                                            <td className="px-6 py-4 text-muted-foreground">{tenant.id}</td>
+                                            <td className="px-6 py-4 font-medium text-foreground">{tenant.name}</td>
+                                            <td className="px-6 py-4 text-muted-foreground">{tenant.subdomain}</td>
+                                            <td className="px-6 py-4 text-muted-foreground">{tenant.userCount}</td>
+                                            <td className="px-6 py-4 text-muted-foreground">{tenant.companyCount}</td>
+                                            <td className="px-6 py-4">
+                                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${tenant.active
+                                                    ? "bg-green-100 text-green-700"
+                                                    : "bg-muted text-muted-foreground"
+                                                    }`}>
+                                                    {tenant.active ? "Ativo" : "Inativo"}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex gap-3">
+                                                    <a
+                                                        href={`/tenants/${tenant.id}`}
+                                                        className="flex items-center gap-1 text-muted-foreground hover:text-foreground text-xs font-medium"
+                                                    >
+                                                        <Eye size={13} />
+                                                        Detalhes
+                                                    </a>
+                                                    <button
+                                                        onClick={() => setEditingTenant(tenant)}
+                                                        className="flex items-center gap-1 text-blue-500 hover:text-blue-700 text-xs font-medium"
+                                                    >
+                                                        <Pencil size={13} />
+                                                        Editar
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setTogglingTenant(tenant)}
+                                                        className={`text-xs font-medium ${tenant.active
+                                                            ? "text-orange-500 hover:text-orange-700"
+                                                            : "text-green-500 hover:text-green-700"
+                                                            }`}
+                                                    >
+                                                        {tenant.active ? "Desativar" : "Ativar"}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setDeletingTenant(tenant)}
+                                                        className="flex items-center gap-1 text-destructive hover:text-destructive/80 text-xs font-medium"
+                                                    >
+                                                        <Trash2 size={13} />
+                                                        Excluir
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    )}
+                </div>
 
                 <div className="flex items-center justify-between px-4 lg:px-6 py-4 border-t border-border">
                     <span className="text-sm text-muted-foreground">{pagination.total} tenants</span>

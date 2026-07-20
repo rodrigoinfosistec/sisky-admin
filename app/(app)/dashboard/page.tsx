@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { LayoutDashboard, Building2, Users, TrendingUp } from "lucide-react";
 import api from "@/lib/api";
 import PageTitle from "@/components/page-title";
+import { SkeletonCard } from "@/components/skeleton";
 
 interface Metrics {
     totalTenants: number;
@@ -56,12 +57,7 @@ export default function DashboardPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {loading ? (
-                    Array.from({ length: 4 }).map((_, i) => (
-                        <div key={i} className="bg-card rounded-xl border border-border p-5">
-                            <div className="h-4 bg-muted rounded animate-pulse w-24 mb-3" />
-                            <div className="h-8 bg-muted rounded animate-pulse w-16" />
-                        </div>
-                    ))
+                    Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
                 ) : (
                     cards.map((card) => (
                         <div
