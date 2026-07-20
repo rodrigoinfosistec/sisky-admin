@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Eye, Plus, Pencil, Trash2 } from "lucide-react";
+import { Eye, Plus, Pencil, Trash2, Building2 } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/api";
 import ConfirmDialog from "@/components/confirm-dialog";
@@ -9,6 +9,7 @@ import CreateTenantModal from "./components/CreateTenantModal";
 import EditTenantModal from "./components/EditTenantModal";
 import PageTitle from "@/components/page-title";
 import { SkeletonTable } from "@/components/skeleton";
+import PageHeader from "@/components/page-header";
 
 interface Tenant {
     id: number;
@@ -111,19 +112,23 @@ export default function TenantsPage() {
         <div>
             <PageTitle title="Tenants" />
 
-            <div className="flex items-center justify-between mb-6">
-                <div>
-                    <h1 className="text-2xl font-bold text-foreground">Tenants</h1>
-                    <p className="text-muted-foreground text-sm mt-1">Gestão de todos os tenants</p>
-                </div>
-                <button
-                    onClick={() => setShowCreateModal(true)}
-                    className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
-                >
-                    <Plus size={15} />
-                    Novo Tenant
-                </button>
-            </div>
+            <PageHeader
+                title="Tenants"
+                icon={<Building2 size={22} />}
+                breadcrumb={[
+                    { label: "Dashboard", href: "/dashboard" },
+                    { label: "Tenants" },
+                ]}
+                actions={
+                    <button
+                        onClick={() => setShowCreateModal(true)}
+                        className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+                    >
+                        <Plus size={15} />
+                        Novo Tenant
+                    </button>
+                }
+            />
 
             <div className="bg-card rounded-xl shadow-sm overflow-hidden border border-border">
                 <div className="px-4 lg:px-6 py-4 border-b border-border">

@@ -5,6 +5,7 @@ import { LayoutDashboard, Building2, Users, TrendingUp } from "lucide-react";
 import api from "@/lib/api";
 import PageTitle from "@/components/page-title";
 import { SkeletonCard } from "@/components/skeleton";
+import PageHeader from "@/components/page-header";
 
 interface Metrics {
     totalTenants: number;
@@ -50,10 +51,11 @@ export default function DashboardPage() {
         <div>
             <PageTitle title="Dashboard" />
 
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-                <p className="text-muted-foreground text-sm mt-1">Visão global do Sisky</p>
-            </div>
+            <PageHeader
+                title="Dashboard"
+                icon={<LayoutDashboard size={22} />}
+                breadcrumb={[{ label: "Dashboard" }]}
+            />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {loading ? (
