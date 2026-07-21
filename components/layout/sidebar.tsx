@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Building2, LogOut } from "lucide-react";
+import { LayoutDashboard, Building2, LogOut, ClipboardList } from "lucide-react";
 import Image from "next/image";
 
 interface Props {
@@ -12,6 +12,7 @@ interface Props {
 const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/tenants", label: "Tenants", icon: Building2 },
+    { href: "/audit", label: "Auditoria", icon: ClipboardList },
 ];
 
 export default function Sidebar({ onLogout, onNavigate }: Props) {
@@ -34,8 +35,8 @@ export default function Sidebar({ onLogout, onNavigate }: Props) {
                             href={item.href}
                             onClick={onNavigate}
                             className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${active
-                                    ? "bg-primary text-primary-foreground"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                                ? "bg-primary text-primary-foreground"
+                                : "text-muted-foreground hover:text-foreground hover:bg-muted"
                                 }`}
                         >
                             <Icon size={18} />
