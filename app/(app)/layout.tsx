@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 import Sidebar from "@/components/layout/sidebar";
 import Header from "@/components/layout/header";
 import { useState } from "react";
+import { useAdminProfile } from "@/hooks/use-admin-profile";
 
 export default function AppLayout({
     children,
@@ -13,6 +14,7 @@ export default function AppLayout({
 }) {
     const router = useRouter();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const profile = useAdminProfile();
 
     function handleLogout() {
         localStorage.removeItem("admin_token");
@@ -42,6 +44,7 @@ export default function AppLayout({
 
             <div className="flex-1 lg:ml-64">
                 <Header
+                    profile={profile}
                     sidebarOpen={sidebarOpen}
                     onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
                     onLogout={handleLogout}
