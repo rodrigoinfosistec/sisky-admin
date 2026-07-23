@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Building2, LogOut, ClipboardList } from "lucide-react";
+import { LayoutDashboard, Building2, LogOut, ClipboardList, LifeBuoy } from "lucide-react";
 import Image from "next/image";
 
 interface Props {
@@ -12,6 +12,7 @@ interface Props {
 const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/tenants", label: "Tenants", icon: Building2 },
+    { href: "/audit", label: "Auditoria", icon: ClipboardList },
     { href: "/audit", label: "Auditoria", icon: ClipboardList },
 ];
 
