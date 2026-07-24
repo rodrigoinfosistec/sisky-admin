@@ -1,7 +1,14 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Building2, LogOut, ClipboardList, LifeBuoy } from "lucide-react";
+import {
+    LayoutDashboard,
+    Building2,
+    LogOut,
+    ClipboardList,
+    LifeBuoy,
+    Settings,
+} from "lucide-react";
 import Image from "next/image";
 
 interface Props {
@@ -14,6 +21,7 @@ const navItems = [
     { href: "/tenants", label: "Tenants", icon: Building2 },
     { href: "/tickets", label: "Tickets", icon: LifeBuoy },
     { href: "/audit", label: "Auditoria", icon: ClipboardList },
+    { href: "/settings", label: "Configurações", icon: Settings },
 ];
 
 export default function Sidebar({ onLogout, onNavigate }: Props) {
