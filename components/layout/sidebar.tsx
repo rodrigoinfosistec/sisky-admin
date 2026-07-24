@@ -12,7 +12,7 @@ interface Props {
 const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/tenants", label: "Tenants", icon: Building2 },
-    { href: "/audit", label: "Auditoria", icon: ClipboardList },
+    { href: "/tickets", label: "Tickets", icon: LifeBuoy },
     { href: "/audit", label: "Auditoria", icon: ClipboardList },
 ];
 
