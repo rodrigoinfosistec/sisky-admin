@@ -2,15 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { ArrowLeft, Building2, Package, Users } from "lucide-react";
+import { ArrowLeft, Building2, Package, Users, Plus, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/api";
 import PageTitle from "@/components/page-title";
 import PageHeader from "@/components/page-header";
+import ConfirmDialog from "@/components/confirm-dialog";
+import CreateCompanyModal from "./components/CreateCompanyModal";
+import EditCompanyModal from "./components/EditCompanyModal";
 
 interface TenantDetailsCompany {
     id: number;
     name: string;
+    primaryColor: string | null;
     active: boolean;
 }
 
@@ -38,6 +42,11 @@ export default function TenantDetailsPage() {
     const [tenant, setTenant] = useState<TenantDetails | null>(null);
     const [loading, setLoading] = useState(true);
     const [togglingModule, setTogglingModule] = useState<number | null>(null);
+    const [showCreateCompany, setShowCreateCompany] = useState(false);
+    const [editingCompany, setEditingCompany] = useState<TenantDetailsCompany | null>(null);
+    const [deletingCompany, setDeletingCompany] = useState<TenantDetailsCompany | null>(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+    const [togglingCompany, setTogglingCompany] = useState<number | null>(null);
 
     async function fetchTenant() {
         try {
@@ -61,6 +70,34 @@ export default function TenantDetailsPage() {
             toast.error(err.response?.data ?? "Erro ao atualizar módulo.");
         } finally {
             setTogglingModule(null);
+        }
+    }
+
+    async function handleToggleCompany(companyId: number) {
+        setTogglingCompany(companyId);
+        try {
+            await api.patch(`/api/admin/tenants/${id}/companies/${companyId}/toggle-active`);
+            toast.success("Empresa atualizada com sucesso!");
+            fetchTenant();
+        } catch {
+            toast.error("Erro ao atualizar empresa.");
+        } finally {
+            setTogglingCompany(null);
+        }
+    }
+
+    async function handleDeleteCompany() {
+        if (!deletingCompany) return;
+        setDeleteLoading(true);
+        try {
+            await api.delete(`/api/admin/tenants/${id}/companies/${deletingCompany.id}`);
+            toast.success("Empresa excluída com sucesso!");
+            setDeletingCompany(null);
+            fetchTenant();
+        } catch (err: any) {
+            toast.error(err.response?.data ?? "Erro ao excluir empresa.");
+        } finally {
+            setDeleteLoading(false);
         }
     }
 
@@ -131,8 +168,18 @@ export default function TenantDetailsPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Empresas */}
                 <div className="bg-card rounded-xl border border-border p-6">
-                    <h2 className="text-sm font-semibold text-foreground mb-4">Empresas</h2>
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-sm font-semibold text-foreground">Empresas</h2>
+                        <button
+                            onClick={() => setShowCreateCompany(true)}
+                            className="flex items-center gap-1 px-3 py-1.5 bg-primary text-primary-foreground text-xs rounded-lg hover:bg-primary/90 transition-colors"
+                        >
+                            <Plus size={13} />
+                            Nova
+                        </button>
+                    </div>
                     {tenant.companies.length === 0 ? (
                         <p className="text-sm text-muted-foreground">Nenhuma empresa cadastrada.</p>
                     ) : (
@@ -140,21 +187,48 @@ export default function TenantDetailsPage() {
                             {tenant.companies.map((company) => (
                                 <div
                                     key={company.id}
-                                    className="flex items-center justify-between p-3 rounded-lg border border-border bg-background"
+                                    className={`flex items-center justify-between p-3 rounded-lg border border-border bg-background ${!company.active ? "opacity-60" : ""}`}
                                 >
-                                    <span className="text-sm text-foreground">{company.name}</span>
-                                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${company.active
-                                        ? "bg-green-100 text-green-700"
-                                        : "bg-muted text-muted-foreground"
-                                        }`}>
-                                        {company.active ? "Ativa" : "Inativa"}
-                                    </span>
+                                    <div className="flex items-center gap-2">
+                                        {company.primaryColor && (
+                                            <div
+                                                className="w-4 h-4 rounded-full border border-border shrink-0"
+                                                style={{ backgroundColor: company.primaryColor }}
+                                            />
+                                        )}
+                                        <span className="text-sm text-foreground">{company.name}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={() => setEditingCompany(company)}
+                                            className="text-blue-500 hover:text-blue-700"
+                                        >
+                                            <Pencil size={13} />
+                                        </button>
+                                        <button
+                                            onClick={() => handleToggleCompany(company.id)}
+                                            disabled={togglingCompany === company.id}
+                                            className={`text-xs px-2 py-0.5 rounded-full font-medium ${company.active
+                                                ? "bg-green-100 text-green-700"
+                                                : "bg-muted text-muted-foreground"
+                                                }`}
+                                        >
+                                            {company.active ? "Ativa" : "Inativa"}
+                                        </button>
+                                        <button
+                                            onClick={() => setDeletingCompany(company)}
+                                            className="text-destructive hover:text-destructive/80"
+                                        >
+                                            <Trash2 size={13} />
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
                     )}
                 </div>
 
+                {/* Módulos */}
                 <div className="bg-card rounded-xl border border-border p-6">
                     <h2 className="text-sm font-semibold text-foreground mb-4">Módulos</h2>
 
@@ -210,6 +284,31 @@ export default function TenantDetailsPage() {
                     )}
                 </div>
             </div>
+
+            {showCreateCompany && (
+                <CreateCompanyModal
+                    tenantId={tenant.id}
+                    onClose={() => setShowCreateCompany(false)}
+                    onSuccess={() => fetchTenant()}
+                />
+            )}
+
+            <EditCompanyModal
+                tenantId={tenant.id}
+                company={editingCompany}
+                onClose={() => setEditingCompany(null)}
+                onSuccess={() => fetchTenant()}
+            />
+
+            <ConfirmDialog
+                open={!!deletingCompany}
+                title="Excluir empresa"
+                description={`Tem certeza que deseja excluir a empresa "${deletingCompany?.name}"? Esta ação não pode ser desfeita.`}
+                confirmLabel="Excluir"
+                loading={deleteLoading}
+                onConfirm={handleDeleteCompany}
+                onCancel={() => setDeletingCompany(null)}
+            />
         </div>
     );
 }
