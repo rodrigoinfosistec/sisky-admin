@@ -18,6 +18,7 @@ interface TenantDetailsModule {
     id: number;
     name: string;
     slug: string;
+    isCore: boolean;
     active: boolean;
 }
 
@@ -36,6 +37,7 @@ export default function TenantDetailsPage() {
     const { id } = useParams();
     const [tenant, setTenant] = useState<TenantDetails | null>(null);
     const [loading, setLoading] = useState(true);
+    const [togglingModule, setTogglingModule] = useState<number | null>(null);
 
     async function fetchTenant() {
         try {
@@ -45,6 +47,20 @@ export default function TenantDetailsPage() {
             toast.error("Erro ao carregar tenant.");
         } finally {
             setLoading(false);
+        }
+    }
+
+    async function handleToggleModule(moduleId: number, isCore: boolean) {
+        if (isCore) return;
+        setTogglingModule(moduleId);
+        try {
+            await api.patch(`/api/admin/tenants/${id}/modules/${moduleId}/toggle`);
+            toast.success("Módulo atualizado com sucesso!");
+            fetchTenant();
+        } catch (err: any) {
+            toast.error(err.response?.data ?? "Erro ao atualizar módulo.");
+        } finally {
+            setTogglingModule(null);
         }
     }
 
@@ -61,6 +77,9 @@ export default function TenantDetailsPage() {
     }
 
     if (!tenant) return null;
+
+    const coreModules = tenant.modules.filter(m => m.isCore);
+    const optionalModules = tenant.modules.filter(m => !m.isCore);
 
     return (
         <div>
@@ -104,7 +123,7 @@ export default function TenantDetailsPage() {
 
                 <div className="bg-card rounded-xl border border-border p-5 flex flex-col gap-2">
                     <div className="flex items-center justify-between">
-                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Módulos</span>
+                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Módulos Ativos</span>
                         <Package size={16} className="text-muted-foreground" />
                     </div>
                     <p className="text-3xl font-bold text-foreground">{tenant.modules.filter(m => m.active).length}</p>
@@ -138,27 +157,55 @@ export default function TenantDetailsPage() {
 
                 <div className="bg-card rounded-xl border border-border p-6">
                     <h2 className="text-sm font-semibold text-foreground mb-4">Módulos</h2>
-                    {tenant.modules.length === 0 ? (
-                        <p className="text-sm text-muted-foreground">Nenhum módulo configurado.</p>
-                    ) : (
-                        <div className="flex flex-col gap-2">
-                            {tenant.modules.map((module) => (
-                                <div
-                                    key={module.id}
-                                    className="flex items-center justify-between p-3 rounded-lg border border-border bg-background"
-                                >
-                                    <div>
-                                        <p className="text-sm text-foreground">{module.name}</p>
-                                        <p className="text-xs text-muted-foreground">{module.slug}</p>
+
+                    {coreModules.length > 0 && (
+                        <div className="mb-4">
+                            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Core — sempre ativos</p>
+                            <div className="flex flex-col gap-2">
+                                {coreModules.map((module) => (
+                                    <div
+                                        key={module.id}
+                                        className="flex items-center justify-between p-3 rounded-lg border border-border bg-background"
+                                    >
+                                        <div>
+                                            <p className="text-sm text-foreground">{module.name}</p>
+                                            <p className="text-xs text-muted-foreground">{module.slug}</p>
+                                        </div>
+                                        <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-blue-100 text-blue-700">
+                                            Core
+                                        </span>
                                     </div>
-                                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${module.active
-                                        ? "bg-green-100 text-green-700"
-                                        : "bg-muted text-muted-foreground"
-                                        }`}>
-                                        {module.active ? "Ativo" : "Inativo"}
-                                    </span>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {optionalModules.length > 0 && (
+                        <div>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Opcionais</p>
+                            <div className="flex flex-col gap-2">
+                                {optionalModules.map((module) => (
+                                    <div
+                                        key={module.id}
+                                        className="flex items-center justify-between p-3 rounded-lg border border-border bg-background"
+                                    >
+                                        <div>
+                                            <p className="text-sm text-foreground">{module.name}</p>
+                                            <p className="text-xs text-muted-foreground">{module.slug}</p>
+                                        </div>
+                                        <button
+                                            onClick={() => handleToggleModule(module.id, module.isCore)}
+                                            disabled={togglingModule === module.id}
+                                            className={`text-xs px-3 py-1 rounded-lg font-medium transition-colors disabled:opacity-50 ${module.active
+                                                ? "bg-green-100 text-green-700 hover:bg-green-200"
+                                                : "bg-muted text-muted-foreground hover:bg-muted/80"
+                                                }`}
+                                        >
+                                            {togglingModule === module.id ? "..." : module.active ? "Ativo" : "Inativo"}
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     )}
                 </div>
