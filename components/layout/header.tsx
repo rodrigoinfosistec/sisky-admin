@@ -49,6 +49,14 @@ export default function Header({ profile, sidebarOpen, onToggleSidebar, onLogout
         return () => clearInterval(interval);
     }, [fetchPendingTickets]);
 
+    useEffect(() => {
+        function handleTicketViewed(e: CustomEvent) {
+            setPendingTickets((prev) => prev.filter((t) => t.id !== e.detail.ticketId));
+        }
+        window.addEventListener("ticket-viewed", handleTicketViewed as EventListener);
+        return () => window.removeEventListener("ticket-viewed", handleTicketViewed as EventListener);
+    }, []);
+
     function getPriorityColor(priority: string) {
         switch (priority) {
             case "urgent": return "text-red-500";

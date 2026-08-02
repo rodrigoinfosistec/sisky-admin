@@ -97,6 +97,8 @@ export default function TicketDetailsPage() {
 
     useEffect(() => {
         fetchTicket();
+        // Dispara evento para o header remover este ticket do sino
+        window.dispatchEvent(new CustomEvent("ticket-viewed", { detail: { ticketId: Number(id) } }));
     }, [id]);
 
     useEffect(() => {
